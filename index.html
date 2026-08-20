@@ -1,2764 +1,1273 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>LocalLens — See the city like a local.</title>
-
-  <meta
-    name="description"
-    content="LocalLens — practical travel intelligence powered by local knowledge."
-  />
-
-  <style>
-    /* =========================================================
-       LOCAL LENS
-       Single-file demo
-       ========================================================= */
-
-    :root {
-      --black: #111315;
-      --black-2: #191c1f;
-      --orange: #ff7417;
-      --orange-2: #ff9145;
-      --orange-soft: #fff0e5;
-
-      --white: #ffffff;
-      --off-white: #f7f5f1;
-      --surface: #fcfbf8;
-
-      --text: #111315;
-      --muted: #6b7074;
-      --line: #e7e4df;
-
-      --green: #218a5b;
-      --green-soft: #e9f7ef;
-
-      --red: #d94b3a;
-      --red-soft: #fcedea;
-
-      --shadow: 0 12px 40px rgba(17, 19, 21, 0.08);
-      --shadow-lg: 0 24px 70px rgba(17, 19, 21, 0.15);
-
-      --radius: 22px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: Inter, Arial, Helvetica, sans-serif;
-      background: #0d0f10;
-      color: var(--text);
-    }
-
-    button,
-    input,
-    textarea,
-    select {
-      font: inherit;
-    }
-
-    button {
-      border: none;
-      cursor: pointer;
-    }
-
-    .app {
-      width: 100%;
-      max-width: 480px;
-      min-height: 100vh;
-      margin: 0 auto;
-      background: var(--off-white);
-      position: relative;
-      overflow-x: hidden;
-      box-shadow: 0 0 100px rgba(0, 0, 0, 0.25);
-    }
-
-    @media (min-width: 700px) {
-      body {
-        padding: 30px 0;
-      }
-
-      .app {
-        border-radius: 30px;
-        min-height: calc(100vh - 60px);
-        overflow: hidden;
-      }
-    }
-
-    /* =========================================================
-       GENERAL
-       ========================================================= */
-
-    .screen {
-      min-height: 100vh;
-      padding-bottom: 105px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .container {
-      padding: 0 20px;
-    }
-
-    .section {
-      padding: 30px 20px 0;
-    }
-
-    .section-label {
-      color: var(--orange);
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      margin-bottom: 7px;
-    }
-
-    .section-title {
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      color: var(--text);
-    }
-
-    .muted {
-      color: var(--muted);
-    }
-
-    .small {
-      font-size: 12px;
-    }
-
-    .card {
-      background: var(--white);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 18px;
-      box-shadow: 0 3px 14px rgba(17, 19, 21, 0.025);
-      transition: 0.2s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-    }
-
-    .clickable {
-      cursor: pointer;
-    }
-
-    .btn {
-      min-height: 48px;
-      padding: 0 18px;
-      border-radius: 16px;
-      font-size: 14px;
-      font-weight: 750;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: 0.2s ease;
-    }
-
-    .btn:active {
-      transform: scale(0.97);
-    }
-
-    .btn-primary {
-      color: white;
-      background: var(--orange);
-    }
-
-    .btn-dark {
-      color: white;
-      background: var(--black);
-    }
-
-    .btn-light {
-      color: var(--text);
-      background: var(--off-white);
-      border: 1px solid var(--line);
-    }
-
-    .btn-full {
-      width: 100%;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 6px 9px;
-      border-radius: 999px;
-      font-size: 10px;
-      font-weight: 800;
-    }
-
-    .badge-orange {
-      color: var(--orange);
-      background: var(--orange-soft);
-    }
-
-    .badge-green {
-      color: var(--green);
-      background: var(--green-soft);
-    }
-
-    .badge-dark {
-      color: white;
-      background: var(--black);
-    }
-
-    .divider {
-      height: 1px;
-      background: var(--line);
-      margin: 18px 0;
-    }
-
-    /* =========================================================
-       ICON
-       ========================================================= */
-
-    .icon-box {
-      width: 42px;
-      height: 42px;
-      border-radius: 13px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .icon-orange {
-      background: var(--orange-soft);
-      color: var(--orange);
-    }
-
-    .icon-dark {
-      background: var(--black);
-      color: white;
-    }
-
-    .icon-gray {
-      background: #f1f0ed;
-      color: var(--text);
-    }
-
-    /* =========================================================
-       LOGO
-       ========================================================= */
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-    }
-
-    .logo-mark {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      background: var(--orange);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .logo-mark::before {
-      content: "";
-      position: absolute;
-      width: 25px;
-      height: 18px;
-      border: 2px solid white;
-      border-radius: 50%;
-      transform: rotate(-8deg);
-      opacity: 0.95;
-    }
-
-    .logo-mark span {
-      color: white;
-      font-size: 14px;
-      font-weight: 900;
-      letter-spacing: -3px;
-      z-index: 2;
-      margin-left: -2px;
-    }
-
-    .logo-name {
-      font-size: 15px;
-      font-weight: 900;
-      letter-spacing: -0.03em;
-    }
-
-    .logo-sub {
-      margin-top: 2px;
-      font-size: 8px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: #8b8f93;
-    }
-
-    /* =========================================================
-       HOME
-       ========================================================= */
-
-    .hero {
-      background: var(--black);
-      color: white;
-      padding: 25px 20px 25px;
-      border-bottom-left-radius: 34px;
-      border-bottom-right-radius: 34px;
-    }
-
-    .hero-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 45px;
-    }
-
-    .hero .logo-name {
-      color: white;
-    }
-
-    .notification {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--black-2);
-      border: 1px solid #2c3033;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 17px;
-    }
-
-    .hero-eyebrow {
-      color: var(--orange);
-      font-size: 10px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      margin-bottom: 12px;
-    }
-
-    .hero h1 {
-      font-size: 43px;
-      line-height: 0.98;
-      letter-spacing: -0.055em;
-      font-weight: 850;
-    }
-
-    .hero h1 span {
-      color: var(--orange);
-    }
-
-    .hero-description {
-      color: #a9adb0;
-      font-size: 13px;
-      line-height: 1.65;
-      margin-top: 17px;
-      max-width: 310px;
-    }
-
-    .search-box {
-      background: white;
-      border-radius: 18px;
-      padding: 7px;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      margin-top: 25px;
-    }
-
-    .search-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      background: var(--orange-soft);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--orange);
-    }
-
-    .search-box input {
-      border: none;
-      outline: none;
-      flex: 1;
-      min-width: 0;
-      font-size: 13px;
-      color: var(--text);
-    }
-
-    .search-box input::placeholder {
-      color: #94989b;
-    }
-
-    .hero-button {
-      margin-top: 10px;
-      width: 100%;
-    }
-
-    /* =========================================================
-       INTELLIGENCE GRID
-       ========================================================= */
-
-    .intelligence-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    .feature-card {
-      min-height: 155px;
-      border-radius: 22px;
-      padding: 17px;
-      text-align: left;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .feature-card .icon-box {
-      margin-bottom: 28px;
-    }
-
-    .feature-card h3 {
-      font-size: 15px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
-
-    .feature-card p {
-      font-size: 11px;
-      line-height: 1.55;
-      margin-top: 5px;
-    }
-
-    .fair-card {
-      background: var(--black);
-      color: white;
-      box-shadow: 0 20px 45px rgba(255, 116, 23, 0.12);
-    }
-
-    .fair-card p {
-      color: #a5aaad;
-    }
-
-    .gem-card {
-      background: var(--orange-soft);
-    }
-
-    .normal-feature {
-      background: white;
-      border: 1px solid var(--line);
-    }
-
-    .normal-feature p {
-      color: var(--muted);
-    }
-
-    /* =========================================================
-       DESTINATION
-       ========================================================= */
-
-    .destination-hero {
-      height: 255px;
-      position: relative;
-      overflow: hidden;
-      color: white;
-      background:
-        radial-gradient(
-          circle at 72% 30%,
-          rgba(255, 116, 23, 0.55),
-          transparent 32%
-        ),
-        linear-gradient(145deg, #141719, #363b3e);
-      border-bottom-left-radius: 30px;
-      border-bottom-right-radius: 30px;
-    }
-
-    .destination-content {
-      position: absolute;
-      inset: auto 20px 22px;
-    }
-
-    .destination-back {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      color: white;
-      background: rgba(0,0,0,.35);
-      border: 1px solid rgba(255,255,255,.15);
-    }
-
-    .destination-content h1 {
-      font-size: 34px;
-      letter-spacing: -0.05em;
-      margin-top: 7px;
-    }
-
-    .destination-content p {
-      font-size: 11px;
-      color: #c1c4c6;
-    }
-
-    .score-card {
-      margin: -24px 20px 0;
-      position: relative;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .score-number {
-      font-size: 34px;
-      font-weight: 900;
-      letter-spacing: -0.06em;
-    }
-
-    .score-number span {
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 600;
-      letter-spacing: 0;
-    }
-
-    .score-label {
-      color: var(--muted);
-      font-size: 11px;
-      margin-top: 3px;
-    }
-
-    .destination-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 11px;
-      margin-top: 13px;
-    }
-
-    .destination-feature {
-      padding: 15px;
-      min-height: 125px;
-    }
-
-    .destination-feature h3 {
-      margin-top: 16px;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .destination-feature p {
-      margin-top: 4px;
-      color: var(--muted);
-      font-size: 10px;
-      line-height: 1.45;
-    }
-
-    /* =========================================================
-       TOP BAR
-       ========================================================= */
-
-    .topbar {
-      height: 70px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 0 20px;
-      background: var(--off-white);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .back-button {
-      width: 40px;
-      height: 40px;
-      border-radius: 13px;
-      background: white;
-      border: 1px solid var(--line);
-      font-size: 18px;
-    }
-
-    .topbar-title {
-      font-size: 17px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-    }
-
-    /* =========================================================
-       FAIRFARE
-       ========================================================= */
-
-    .fare-hero {
-      background: var(--black);
-      color: white;
-      margin: 20px;
-      border-radius: 26px;
-      padding: 22px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .fare-hero::after {
-      content: "";
-      position: absolute;
-      width: 170px;
-      height: 170px;
-      border-radius: 50%;
-      background: rgba(255,116,23,.12);
-      right: -70px;
-      top: -60px;
-    }
-
-    .fare-hero h1 {
-      font-size: 28px;
-      letter-spacing: -0.05em;
-      margin-top: 12px;
-    }
-
-    .fare-hero p {
-      color: #a6aaad;
-      font-size: 12px;
-      line-height: 1.6;
-      margin-top: 6px;
-      max-width: 270px;
-    }
-
-    .input-label {
-      display: block;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      font-weight: 800;
-      color: var(--muted);
-      margin-bottom: 7px;
-    }
-
-    .input {
-      width: 100%;
-      height: 48px;
-      border: 1px solid var(--line);
-      background: white;
-      border-radius: 14px;
-      padding: 0 13px;
-      outline: none;
-      color: var(--text);
-      font-size: 13px;
-    }
-
-    .input:focus {
-      border-color: var(--orange);
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    .fare-result {
-      margin-top: 20px;
-      padding: 20px;
-      border-radius: 22px;
-      background: var(--red-soft);
-      border: 1px solid #f4d3cd;
-    }
-
-    .fare-result.good {
-      background: var(--green-soft);
-      border-color: #c9ead8;
-    }
-
-    .fare-result-title {
-      font-size: 17px;
-      font-weight: 850;
-    }
-
-    .fare-price {
-      font-size: 31px;
-      font-weight: 900;
-      letter-spacing: -0.05em;
-      margin: 9px 0;
-    }
-
-    .fare-advice {
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.55;
-    }
-
-    .range-bar {
-      height: 10px;
-      border-radius: 999px;
-      background: #e7e5e1;
-      overflow: hidden;
-      margin: 16px 0 8px;
-    }
-
-    .range-fill {
-      width: 63%;
-      height: 100%;
-      border-radius: inherit;
-      background: var(--orange);
-    }
-
-    /* =========================================================
-       LISTS
-       ========================================================= */
-
-    .list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .list-item {
-      display: flex;
-      gap: 13px;
-      align-items: center;
-    }
-
-    .list-item-content {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .list-item-title {
-      font-size: 14px;
-      font-weight: 800;
-    }
-
-    .list-item-text {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 3px;
-      line-height: 1.45;
-    }
-
-    .list-arrow {
-      color: #a0a4a7;
-      font-size: 17px;
-    }
-
-    /* =========================================================
-       FOOD / GEMS
-       ========================================================= */
-
-    .visual-placeholder {
-      height: 125px;
-      border-radius: 17px;
-      background:
-        radial-gradient(
-          circle at 75% 25%,
-          rgba(255,116,23,.38),
-          transparent 35%
-        ),
-        linear-gradient(135deg, #1a1d1f, #3a3e40);
-      display: flex;
-      align-items: flex-end;
-      padding: 13px;
-      color: white;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .visual-placeholder::before {
-      content: "";
-      position: absolute;
-      width: 180px;
-      height: 180px;
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 50%;
-      top: -70px;
-      left: -30px;
-    }
-
-    .visual-placeholder span {
-      position: relative;
-      z-index: 1;
-      font-size: 10px;
-      font-weight: 700;
-      color: #d4d6d7;
-    }
-
-    .place-card {
-      overflow: hidden;
-      padding: 0;
-    }
-
-    .place-body {
-      padding: 15px;
-    }
-
-    .place-title-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .place-title {
-      font-size: 15px;
-      font-weight: 850;
-    }
-
-    .place-description {
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.55;
-      margin-top: 5px;
-    }
-
-    .rating {
-      color: var(--orange);
-      font-size: 11px;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    /* =========================================================
-       BUDGET
-       ========================================================= */
-
-    .budget-total {
-      background: var(--black);
-      color: white;
-      padding: 23px;
-      border-radius: 24px;
-      margin-bottom: 13px;
-    }
-
-    .budget-total-label {
-      color: #a5aaad;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: .14em;
-      font-weight: 700;
-    }
-
-    .budget-total-value {
-      font-size: 35px;
-      font-weight: 900;
-      letter-spacing: -0.06em;
-      margin-top: 5px;
-    }
-
-    .budget-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .budget-row:last-child {
-      border-bottom: none;
-    }
-
-    .budget-row span:first-child {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .budget-row span:last-child {
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    /* =========================================================
-       ASK LOCAL
-       ========================================================= */
-
-    .ask-hero {
-      margin: 20px;
-      padding: 24px;
-      border-radius: 25px;
-      background: var(--orange);
-      color: white;
-    }
-
-    .ask-hero h1 {
-      font-size: 29px;
-      letter-spacing: -.05em;
-      margin-top: 10px;
-    }
-
-    .ask-hero p {
-      font-size: 12px;
-      line-height: 1.6;
-      margin-top: 6px;
-      opacity: .85;
-    }
-
-    .question-box {
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 14px;
-      min-height: 110px;
-      resize: vertical;
-      outline: none;
-      width: 100%;
-      font-size: 13px;
-    }
-
-    .answer {
-      background: var(--black);
-      color: white;
-      padding: 19px;
-      border-radius: 22px;
-      margin-top: 15px;
-    }
-
-    .answer p {
-      color: #c0c4c6;
-      font-size: 12px;
-      line-height: 1.7;
-      margin-top: 10px;
-    }
-
-    /* =========================================================
-       PROFILE
-       ========================================================= */
-
-    .profile-header {
-      background: var(--black);
-      color: white;
-      padding: 35px 20px;
-      border-bottom-left-radius: 30px;
-      border-bottom-right-radius: 30px;
-    }
-
-    .profile-avatar {
-      width: 66px;
-      height: 66px;
-      border-radius: 22px;
-      background: var(--orange);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 22px;
-      font-weight: 900;
-    }
-
-    .profile-name {
-      font-size: 23px;
-      font-weight: 850;
-      letter-spacing: -.04em;
-      margin-top: 14px;
-    }
-
-    .profile-tagline {
-      color: #a7abad;
-      font-size: 12px;
-      margin-top: 4px;
-    }
-
-    .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(3,1fr);
-      gap: 9px;
-      margin-top: 22px;
-    }
-
-    .stat {
-      background: var(--black-2);
-      border: 1px solid #2c3033;
-      border-radius: 16px;
-      padding: 12px;
-    }
-
-    .stat-number {
-      font-size: 18px;
-      font-weight: 850;
-    }
-
-    .stat-label {
-      font-size: 9px;
-      color: #8f9497;
-      margin-top: 3px;
-    }
-
-    /* =========================================================
-       BOTTOM NAV
-       ========================================================= */
-
-    .bottom-nav-wrap {
-      position: fixed;
-      z-index: 100;
-      left: 50%;
-      bottom: 12px;
-      transform: translateX(-50%);
-      width: min(456px, calc(100% - 20px));
-    }
-
-    .bottom-nav {
-      background: rgba(255,255,255,.95);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      padding: 7px;
-      display: flex;
-      justify-content: space-around;
-      box-shadow: 0 15px 45px rgba(0,0,0,.13);
-    }
-
-    .nav-btn {
-      width: 65px;
-      padding: 8px 4px;
-      border-radius: 17px;
-      background: transparent;
-      color: var(--muted);
-      font-size: 9px;
-      font-weight: 700;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .nav-btn.active {
-      background: var(--orange-soft);
-      color: var(--orange);
-    }
-
-    .nav-icon {
-      font-size: 18px;
-    }
-
-    /* =========================================================
-       TOAST
-       ========================================================= */
-
-    .toast {
-      position: fixed;
-      z-index: 500;
-      left: 50%;
-      bottom: 90px;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--black);
-      color: white;
-      padding: 12px 16px;
-      border-radius: 14px;
-      font-size: 12px;
-      font-weight: 700;
-      opacity: 0;
-      pointer-events: none;
-      transition: .25s ease;
-      width: max-content;
-      max-width: calc(100% - 40px);
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    /* =========================================================
-       DESKTOP
-       ========================================================= */
-
-    @media (min-width: 900px) {
-      .app {
-        max-width: 520px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>LocalLens — See the city like a local</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --orange:#ff6b1a;
+    --orange-light:#ff8a3d;
+    --dark:#101112;
+    --dark-2:#17191b;
+    --cream:#f7f5f0;
+    --white:#ffffff;
+    --muted:#777b80;
+    --border:#e6e3dc;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:Arial, Helvetica, sans-serif;
+    background:var(--cream);
+    color:var(--dark);
+    line-height:1.5;
+}
+
+/* ================= NAVBAR ================= */
+
+.navbar{
+    width:100%;
+    background:rgba(16,17,18,.96);
+    color:white;
+    position:sticky;
+    top:0;
+    z-index:1000;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.nav-inner{
+    max-width:1200px;
+    margin:auto;
+    height:78px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 28px;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    text-decoration:none;
+    color:white;
+    font-weight:900;
+    font-size:22px;
+    letter-spacing:-.8px;
+}
+
+.logo-mark{
+    width:38px;
+    height:38px;
+    border-radius:12px;
+    background:var(--orange);
+    display:grid;
+    place-items:center;
+    color:white;
+    font-size:19px;
+    font-weight:900;
+}
+
+.logo span{
+    color:var(--orange);
+}
+
+.nav-links{
+    display:flex;
+    gap:32px;
+    align-items:center;
+}
+
+.nav-links a{
+    color:#d8d8d8;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:600;
+    transition:.2s;
+}
+
+.nav-links a:hover{
+    color:var(--orange);
+}
+
+.nav-button{
+    background:var(--orange);
+    color:white;
+    text-decoration:none;
+    padding:12px 20px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:800;
+}
+
+/* ================= HERO ================= */
+
+.hero{
+    background:var(--dark);
+    color:white;
+    min-height:650px;
+    position:relative;
+    overflow:hidden;
+}
+
+.hero::before{
+    content:"";
+    position:absolute;
+    width:650px;
+    height:650px;
+    border-radius:50%;
+    background:rgba(255,107,26,.08);
+    right:-180px;
+    top:-200px;
+}
+
+.hero-inner{
+    max-width:1200px;
+    min-height:650px;
+    margin:auto;
+    padding:90px 28px;
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:70px;
+    align-items:center;
+}
+
+.hero-label{
+    color:var(--orange);
+    font-size:13px;
+    font-weight:900;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin-bottom:20px;
+}
+
+.hero h1{
+    font-size:clamp(54px,6vw,86px);
+    line-height:.94;
+    letter-spacing:-4px;
+    max-width:750px;
+    margin-bottom:28px;
+}
+
+.hero h1 span{
+    color:var(--orange);
+}
+
+.hero-description{
+    color:#b8bbbe;
+    font-size:18px;
+    max-width:560px;
+    margin-bottom:38px;
+}
+
+.search-box{
+    display:flex;
+    max-width:600px;
+    background:white;
+    padding:7px;
+    border-radius:14px;
+}
+
+.search-box input{
+    flex:1;
+    border:0;
+    outline:0;
+    padding:16px;
+    font-size:15px;
+    border-radius:10px;
+}
+
+.search-box button{
+    border:0;
+    background:var(--orange);
+    color:white;
+    padding:0 26px;
+    border-radius:10px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+.hero-card{
+    position:relative;
+    height:420px;
+    border-radius:26px;
+    overflow:hidden;
+    background:
+        linear-gradient(to bottom,transparent 30%,rgba(0,0,0,.9)),
+        url("https://images.unsplash.com/photo-1561361058-c24cecae35ca?auto=format&fit=crop&w=1000&q=85")
+        center/cover;
+    box-shadow:0 30px 80px rgba(0,0,0,.4);
+}
+
+.hero-card-content{
+    position:absolute;
+    bottom:28px;
+    left:28px;
+    right:28px;
+}
+
+.hero-card-content small{
+    color:#ffb082;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+}
+
+.hero-card-content h3{
+    font-size:30px;
+    margin-top:5px;
+}
+
+/* ================= GENERAL ================= */
+
+.section{
+    max-width:1200px;
+    margin:auto;
+    padding:100px 28px;
+}
+
+.section-heading{
+    display:flex;
+    justify-content:space-between;
+    align-items:end;
+    margin-bottom:45px;
+}
+
+.eyebrow{
+    color:var(--orange);
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin-bottom:12px;
+}
+
+.section h2{
+    font-size:46px;
+    letter-spacing:-2px;
+    line-height:1;
+}
+
+.section-description{
+    max-width:430px;
+    color:var(--muted);
+}
+
+/* ================= DESTINATION ================= */
+
+.destination{
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:24px;
+}
+
+.destination-main{
+    min-height:420px;
+    border-radius:24px;
+    padding:35px;
+    color:white;
+    display:flex;
+    align-items:end;
+    background:
+        linear-gradient(to top,rgba(0,0,0,.8),rgba(0,0,0,.05)),
+        url("https://images.unsplash.com/photo-1561361058-c24cecae35ca?auto=format&fit=crop&w=1200&q=85")
+        center/cover;
+}
+
+.destination-main h3{
+    font-size:44px;
+    letter-spacing:-2px;
+}
+
+.destination-main p{
+    color:#ddd;
+    margin-top:5px;
+}
+
+.destination-side{
+    display:grid;
+    gap:24px;
+}
+
+.info-card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:24px;
+    padding:30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    transition:.25s;
+}
+
+.info-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 15px 35px rgba(0,0,0,.07);
+}
+
+.info-icon{
+    width:52px;
+    height:52px;
+    background:#fff0e7;
+    color:var(--orange);
+    border-radius:15px;
+    display:grid;
+    place-items:center;
+    font-size:24px;
+}
+
+.info-text{
+    flex:1;
+    margin-left:18px;
+}
+
+.info-text h4{
+    font-size:19px;
+}
+
+.info-text p{
+    color:var(--muted);
+    font-size:14px;
+}
+
+/* ================= FEATURES ================= */
+
+.features{
+    background:var(--dark);
+    color:white;
+}
+
+.features .section{
+    padding-top:100px;
+    padding-bottom:100px;
+}
+
+.features .section-description{
+    color:#999;
+}
+
+.feature-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+}
+
+.feature{
+    min-height:260px;
+    border:1px solid #2c2e30;
+    border-radius:22px;
+    padding:30px;
+    background:#17191b;
+    transition:.25s;
+}
+
+.feature:hover{
+    transform:translateY(-5px);
+    border-color:#46484b;
+}
+
+.feature-icon{
+    font-size:30px;
+    margin-bottom:45px;
+}
+
+.feature h3{
+    font-size:22px;
+    margin-bottom:8px;
+}
+
+.feature p{
+    color:#999;
+    font-size:14px;
+}
+
+/* ================= FAIRFARE ================= */
+
+.fairfare{
+    background:#fff;
+    border-radius:28px;
+    border:1px solid var(--border);
+    padding:45px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:50px;
+    align-items:center;
+}
+
+.fairfare h2{
+    font-size:48px;
+    margin-bottom:15px;
+}
+
+.fairfare p{
+    color:var(--muted);
+}
+
+.fairfare-form{
+    background:#f6f4ef;
+    padding:25px;
+    border-radius:20px;
+}
+
+.field{
+    margin-bottom:15px;
+}
+
+.field label{
+    display:block;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:6px;
+    color:#555;
+}
+
+.field input,
+.field select{
+    width:100%;
+    border:1px solid #ddd;
+    background:white;
+    padding:14px;
+    border-radius:10px;
+    outline:none;
+    font-size:14px;
+}
+
+.check-fare{
+    width:100%;
+    border:0;
+    background:var(--orange);
+    color:white;
+    padding:15px;
+    border-radius:10px;
+    font-weight:800;
+    cursor:pointer;
+    margin-top:5px;
+}
+
+.fare-result{
+    display:none;
+    margin-top:15px;
+    background:#eaf8ef;
+    border-radius:12px;
+    padding:15px;
+    color:#176b37;
+    font-weight:700;
+}
+
+/* ================= LOCAL SCORE ================= */
+
+.score{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+}
+
+.score-card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:25px;
+}
+
+.score-number{
+    font-size:42px;
+    font-weight:900;
+    color:var(--orange);
+}
+
+.score-card h4{
+    margin:10px 0 4px;
+}
+
+.score-card p{
+    color:var(--muted);
+    font-size:13px;
+}
+
+/* ================= ASK LOCAL ================= */
+
+.ask{
+    background:var(--orange);
+    color:white;
+    border-radius:28px;
+    padding:60px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:50px;
+    align-items:center;
+}
+
+.ask h2{
+    font-size:50px;
+    letter-spacing:-2px;
+}
+
+.ask p{
+    margin-top:15px;
+    color:#ffe4d5;
+}
+
+.ask-box{
+    background:white;
+    padding:8px;
+    border-radius:14px;
+    display:flex;
+}
+
+.ask-box input{
+    flex:1;
+    border:0;
+    outline:0;
+    padding:15px;
+}
+
+.ask-box button{
+    border:0;
+    background:var(--dark);
+    color:white;
+    padding:0 20px;
+    border-radius:10px;
+    font-weight:800;
+}
+
+/* ================= FOOTER ================= */
+
+footer{
+    background:var(--dark);
+    color:white;
+    padding:60px 28px;
+}
+
+.footer-inner{
+    max-width:1200px;
+    margin:auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.footer-logo{
+    font-size:24px;
+    font-weight:900;
+}
+
+.footer-logo span{
+    color:var(--orange);
+}
+
+.footer-text{
+    color:#888;
+    font-size:13px;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:850px){
+
+    .nav-links{
+        display:none;
+    }
+
+    .nav-button{
+        padding:10px 14px;
+    }
+
+    .hero-inner{
+        grid-template-columns:1fr;
+        padding:70px 22px;
+    }
+
+    .hero{
+        min-height:auto;
+    }
+
+    .hero-inner{
+        min-height:auto;
+    }
+
+    .hero h1{
+        font-size:54px;
+        letter-spacing:-3px;
+    }
+
+    .hero-card{
+        height:300px;
+    }
+
+    .destination,
+    .fairfare,
+    .ask{
+        grid-template-columns:1fr;
+    }
+
+    .feature-grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .score{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .section-heading{
+        display:block;
+    }
+
+    .section-description{
+        margin-top:15px;
+    }
+}
+
+@media(max-width:550px){
+
+    .nav-inner{
+        padding:0 18px;
+    }
+
+    .logo{
+        font-size:18px;
+    }
+
+    .hero-inner{
+        padding:55px 18px;
+    }
+
+    .hero h1{
+        font-size:46px;
+    }
+
+    .hero-description{
+        font-size:16px;
+    }
+
+    .search-box{
+        display:block;
+        background:transparent;
+        padding:0;
+    }
+
+    .search-box input{
+        width:100%;
+        margin-bottom:8px;
+    }
+
+    .search-box button{
+        width:100%;
+        padding:16px;
+    }
+
+    .section{
+        padding:70px 18px;
+    }
+
+    .section h2{
+        font-size:38px;
+    }
+
+    .feature-grid,
+    .score{
+        grid-template-columns:1fr;
+    }
+
+    .fairfare,
+    .ask{
+        padding:30px;
+    }
+
+    .ask h2,
+    .fairfare h2{
+        font-size:38px;
+    }
+
+    .footer-inner{
+        display:block;
+    }
+
+    .footer-text{
+        margin-top:15px;
+    }
+}
+</style>
 </head>
 
 <body>
 
-<div class="app">
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-inner">
 
-  <!-- =======================================================
-       HOME
-       ======================================================= -->
+        <a href="#" class="logo">
+            <div class="logo-mark">L</div>
+            LOCAL<span>LENS</span>
+        </a>
 
-  <section id="home" class="screen">
-
-    <div class="hero">
-
-      <div class="hero-header">
-
-        <div class="logo">
-          <div class="logo-mark">
-            <span>LL</span>
-          </div>
-
-          <div>
-            <div class="logo-name">LOCAL LENS</div>
-            <div class="logo-sub">Travel intelligence</div>
-          </div>
+        <div class="nav-links">
+            <a href="#explore">Explore</a>
+            <a href="#fairfare">FairFare</a>
+            <a href="#features">Features</a>
+            <a href="#local">Ask a Local</a>
         </div>
 
-        <button class="notification" onclick="showToast('You are all caught up.')">
-          ♢
-        </button>
+        <a href="#explore" class="nav-button">Explore Varanasi →</a>
 
-      </div>
+    </div>
+</nav>
 
-      <div class="hero-eyebrow">
-        Varanasi · India
-      </div>
 
-      <h1>
-        See the city<br>
-        <span>like a local.</span>
-      </h1>
+<!-- HERO -->
+<section class="hero">
 
-      <p class="hero-description">
-        Real prices, hidden places and local knowledge —
-        without the tourist guesswork.
-      </p>
+    <div class="hero-inner">
 
-      <div class="search-box">
+        <div>
 
-        <div class="search-icon">
-          ⌕
+            <div class="hero-label">
+                Varanasi · India
+            </div>
+
+            <h1>
+                See the city<br>
+                <span>like a local.</span>
+            </h1>
+
+            <p class="hero-description">
+                Real prices, hidden places and local knowledge —
+                without the tourist guesswork.
+            </p>
+
+            <div class="search-box">
+
+                <input
+                    type="text"
+                    placeholder="Search places, food, transport..."
+                >
+
+                <button onclick="searchLocal()">
+                    Search
+                </button>
+
+            </div>
+
         </div>
 
-        <input
-          id="destinationSearch"
-          type="text"
-          placeholder="Where are you going?"
-          oninput="searchDestination()"
-        />
 
-      </div>
+        <div class="hero-card">
 
-      <button
-        class="btn btn-primary hero-button"
-        onclick="showScreen('explore')"
-      >
-        Explore Varanasi →
-      </button>
+            <div class="hero-card-content">
+
+                <small>Start exploring</small>
+
+                <h3>Varanasi</h3>
+
+                <p>
+                    Discover the city beyond the usual tourist trail.
+                </p>
+
+            </div>
+
+        </div>
 
     </div>
 
+</section>
 
-    <!-- SEARCH RESULTS -->
 
-    <div
-      id="searchResults"
-      class="section hidden"
-    >
-      <div class="section-label">Destinations</div>
+<!-- DESTINATIONS -->
+<section class="section" id="explore">
 
-      <div class="list">
+    <div class="section-heading">
 
-        <div
-          class="card clickable"
-          onclick="showScreen('explore')"
-        >
-          <div class="list-item">
+        <div>
+            <div class="eyebrow">Destinations</div>
 
-            <div class="icon-box icon-orange">
-              📍
-            </div>
-
-            <div class="list-item-content">
-
-              <div class="list-item-title">
-                Varanasi
-              </div>
-
-              <div class="list-item-text">
-                Uttar Pradesh, India
-              </div>
-
-            </div>
-
-            <div class="list-arrow">
-              →
-            </div>
-
-          </div>
+            <h2>Start local.</h2>
         </div>
 
-      </div>
-    </div>
-
-
-    <!-- LOCAL INTELLIGENCE -->
-
-    <div class="section">
-
-      <div class="section-label">
-        Local intelligence
-      </div>
-
-      <div style="display:flex;justify-content:space-between;align-items:end;">
-        <div class="section-title">
-          Travel smarter.
-        </div>
-
-        <span class="small muted">
-          Built locally
-        </span>
-      </div>
-
-
-      <div class="intelligence-grid">
-
-        <button
-          class="feature-card fair-card"
-          onclick="showScreen('fairfare')"
-        >
-
-          <div class="icon-box" style="background:var(--orange);color:white;">
-            🛺
-          </div>
-
-          <h3>
-            FairFare
-          </h3>
-
-          <p>
-            Know what the ride should cost.
-          </p>
-
-        </button>
-
-
-        <button
-          class="feature-card gem-card"
-          onclick="showScreen('gems')"
-        >
-
-          <div class="icon-box" style="background:white;color:var(--orange);">
-            ◆
-          </div>
-
-          <h3>
-            Hidden Gems
-          </h3>
-
-          <p>
-            Places tourists often miss.
-          </p>
-
-        </button>
-
-
-        <button
-          class="feature-card normal-feature"
-          onclick="showScreen('food')"
-        >
-
-          <div class="icon-box icon-gray">
-            🍛
-          </div>
-
-          <h3>
-            Local Food
-          </h3>
-
-          <p>
-            Eat what locals actually eat.
-          </p>
-
-        </button>
-
-
-        <button
-          class="feature-card normal-feature"
-          onclick="showScreen('ask')"
-        >
-
-          <div class="icon-box icon-gray">
-            💬
-          </div>
-
-          <h3>
-            Ask a Local
-          </h3>
-
-          <p>
-            Get practical local answers.
-          </p>
-
-        </button>
-
-      </div>
-
-    </div>
-
-
-    <!-- LIVE DESTINATION -->
-
-    <div class="section">
-
-      <div class="section-label">
-        Live destination
-      </div>
-
-      <div
-        class="card clickable"
-        style="padding:0;overflow:hidden;"
-        onclick="showScreen('explore')"
-      >
-
-        <div class="visual-placeholder" style="height:180px;">
-
-          <span>
-            VARANASI · SAMPLE DESTINATION VISUAL
-          </span>
-
-        </div>
-
-        <div style="padding:16px;display:flex;justify-content:space-between;align-items:center;">
-
-          <div>
-
-            <div style="font-size:15px;font-weight:850;">
-              Varanasi
-            </div>
-
-            <div class="small muted" style="margin-top:4px;">
-              Explore the city differently.
-            </div>
-
-          </div>
-
-          <div class="icon-box icon-orange">
-            →
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =======================================================
-       EXPLORE
-       ======================================================= -->
-
-  <section id="explore" class="screen hidden">
-
-    <div class="destination-hero">
-
-      <button
-        class="destination-back"
-        onclick="showScreen('home')"
-      >
-        ←
-      </button>
-
-      <div class="destination-content">
-
-        <span class="badge" style="background:var(--orange);color:white;">
-          ● LIVE
-        </span>
-
-        <h1>
-          Varanasi
-        </h1>
-
-        <p>
-          Uttar Pradesh · India
+        <p class="section-description">
+            Local intelligence for travellers who want to understand
+            a destination instead of simply visiting it.
         </p>
 
-      </div>
-
     </div>
 
 
-    <div class="card score-card">
+    <div class="destination">
 
-      <div>
+        <div class="destination-main">
 
-        <div class="section-label" style="margin:0;">
-          Local Score
+            <div>
+                <h3>Varanasi</h3>
+
+                <p>
+                    Uttar Pradesh, India · India's spiritual capital
+                </p>
+            </div>
+
         </div>
 
-        <div class="score-number">
-          8.7<span>/10</span>
-        </div>
 
-        <div class="score-label">
-          Strong local recommendation
-        </div>
+        <div class="destination-side">
 
-      </div>
+            <div class="info-card">
 
-      <div style="text-align:right;">
-        <div style="font-size:22px;color:var(--orange);">
-          ★★★★★
-        </div>
+                <div class="info-icon">🛺</div>
 
-        <div class="small muted">
-          Community
+                <div class="info-text">
+                    <h4>Local Transport</h4>
+                    <p>Know what a fair ride should cost.</p>
+                </div>
+
+                <strong>→</strong>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <div class="info-icon">🍛</div>
+
+                <div class="info-text">
+                    <h4>Local Food</h4>
+                    <p>Find what locals actually eat.</p>
+                </div>
+
+                <strong>→</strong>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <div class="info-icon">💎</div>
+
+                <div class="info-text">
+                    <h4>Hidden Gems</h4>
+                    <p>Go beyond the obvious tourist spots.</p>
+                </div>
+
+                <strong>→</strong>
+
+            </div>
+
         </div>
-      </div>
 
     </div>
 
+</section>
+
+
+<!-- FEATURES -->
+<section class="features" id="features">
 
     <div class="section">
 
-      <div class="section-label">
-        Explore Varanasi
-      </div>
+        <div class="section-heading">
 
-      <div class="section-title">
-        Local intelligence
-      </div>
+            <div>
+                <div class="eyebrow">Local intelligence</div>
+                <h2>Travel smarter.</h2>
+            </div>
 
+            <p class="section-description">
+                Everything you need to navigate a city with
+                confidence.
+            </p>
 
-      <div class="destination-grid">
-
-        <button
-          class="card destination-feature clickable"
-          onclick="showScreen('fairfare')"
-        >
-          <div class="icon-box icon-orange">
-            🛺
-          </div>
-          <h3>FairFare</h3>
-          <p>
-            Check whether your transport quote is fair.
-          </p>
-        </button>
+        </div>
 
 
-        <button
-          class="card destination-feature clickable"
-          onclick="showScreen('gems')"
-        >
-          <div class="icon-box icon-orange">
-            ◆
-          </div>
-          <h3>Hidden Gems</h3>
-          <p>
-            Discover places beyond the usual tourist route.
-          </p>
-        </button>
+        <div class="feature-grid">
+
+            <div class="feature">
+
+                <div class="feature-icon">🛺</div>
+
+                <h3>FairFare</h3>
+
+                <p>
+                    Compare driver quotes with community-reported
+                    local price ranges.
+                </p>
+
+            </div>
 
 
-        <button
-          class="card destination-feature clickable"
-          onclick="showScreen('food')"
-        >
-          <div class="icon-box icon-gray">
-            🍛
-          </div>
-          <h3>Local Food</h3>
-          <p>
-            Find food locals actually recommend.
-          </p>
-        </button>
+            <div class="feature">
+
+                <div class="feature-icon">💎</div>
+
+                <h3>Hidden Gems</h3>
+
+                <p>
+                    Discover neighbourhoods, spots and experiences
+                    tourists often miss.
+                </p>
+
+            </div>
 
 
-        <button
-          class="card destination-feature clickable"
-          onclick="showScreen('transport')"
-        >
-          <div class="icon-box icon-gray">
-            🚌
-          </div>
-          <h3>Transport</h3>
-          <p>
-            Understand local routes and options.
-          </p>
-        </button>
+            <div class="feature">
+
+                <div class="feature-icon">🍛</div>
+
+                <h3>Local Food</h3>
+
+                <p>
+                    Find authentic food and understand what locals
+                    actually recommend.
+                </p>
+
+            </div>
 
 
-        <button
-          class="card destination-feature clickable"
-          onclick="showScreen('budget')"
-        >
-          <div class="icon-box icon-gray">
-            ₹
-          </div>
-          <h3>Budget Planner</h3>
-          <p>
-            Estimate your daily travel spending.
-          </p>
-        </button>
+            <div class="feature">
+
+                <div class="feature-icon">⚠️</div>
+
+                <h3>Tourist Alerts</h3>
+
+                <p>
+                    Practical warnings about scams, crowds,
+                    transport and local conditions.
+                </p>
+
+            </div>
 
 
-        <button
-          class="card destination-feature clickable"
-          onclick="showScreen('ask')"
-        >
-          <div class="icon-box icon-gray">
-            💬
-          </div>
-          <h3>Ask a Local</h3>
-          <p>
-            Ask practical questions about Varanasi.
-          </p>
-        </button>
+            <div class="feature">
 
-      </div>
+                <div class="feature-icon">⭐</div>
+
+                <h3>Local Score</h3>
+
+                <p>
+                    Compare places using authenticity, value,
+                    accessibility and local recommendations.
+                </p>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">🗣️</div>
+
+                <h3>Ask a Local</h3>
+
+                <p>
+                    Get practical destination advice from people
+                    who actually know the city.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- FAIRFARE -->
+<section class="section" id="fairfare">
+
+    <div class="fairfare">
+
+        <div>
+
+            <div class="eyebrow">FairFare</div>
+
+            <h2>
+                Don't guess<br>
+                the local price.
+            </h2>
+
+            <p>
+                Enter your route and the price quoted by your driver.
+                LocalLens compares it against our community-reported
+                range.
+            </p>
+
+        </div>
+
+
+        <div class="fairfare-form">
+
+            <div class="field">
+
+                <label>FROM</label>
+
+                <input
+                    id="from"
+                    placeholder="e.g. Varanasi Cantt"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>TO</label>
+
+                <input
+                    id="to"
+                    placeholder="e.g. Dashashwamedh Ghat"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>VEHICLE</label>
+
+                <select id="vehicle">
+                    <option>Auto</option>
+                    <option>E-Rickshaw</option>
+                    <option>Cab</option>
+                </select>
+
+            </div>
+
+
+            <div class="field">
+
+                <label>DRIVER QUOTED</label>
+
+                <input
+                    id="price"
+                    type="number"
+                    placeholder="₹ 300"
+                >
+
+            </div>
+
+
+            <button class="check-fare" onclick="checkFare()">
+                Check FairFare
+            </button>
+
+
+            <div id="fareResult" class="fare-result"></div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- LOCAL SCORE -->
+<section class="section">
+
+    <div class="section-heading">
+
+        <div>
+
+            <div class="eyebrow">Local Score</div>
+
+            <h2>Know before you go.</h2>
+
+        </div>
+
+        <p class="section-description">
+            A simple way to understand whether a place is worth
+            your time and money.
+        </p>
 
     </div>
 
 
-    <div class="section">
+    <div class="score">
 
-      <div class="section-label">
-        Quick intelligence
-      </div>
-
-      <div class="card">
-
-        <div class="budget-row">
-          <span>Average daily budget</span>
-          <span>₹1,800–3,200</span>
+        <div class="score-card">
+            <div class="score-number">9.2</div>
+            <h4>Authenticity</h4>
+            <p>Strong local character and atmosphere.</p>
         </div>
 
-        <div class="budget-row">
-          <span>Local transport</span>
-          <span>₹30–150</span>
+        <div class="score-card">
+            <div class="score-number">8.8</div>
+            <h4>Value</h4>
+            <p>Good experience for the money.</p>
         </div>
 
-        <div class="budget-row">
-          <span>Travel profile</span>
-          <span>Budget friendly</span>
+        <div class="score-card">
+            <div class="score-number">9.4</div>
+            <h4>Local Pick</h4>
+            <p>Highly recommended by the community.</p>
         </div>
 
-        <div class="budget-row">
-          <span>Peak density</span>
-          <span>High</span>
+        <div class="score-card">
+            <div class="score-number">8.6</div>
+            <h4>Accessibility</h4>
+            <p>Easy to reach and navigate.</p>
         </div>
-
-      </div>
 
     </div>
 
-  </section>
+</section>
 
 
-  <!-- =======================================================
-       FAIRFARE
-       ======================================================= -->
+<!-- ASK A LOCAL -->
+<section class="section" id="local">
 
-  <section id="fairfare" class="screen hidden">
+    <div class="ask">
 
-    <div class="topbar">
+        <div>
 
-      <button
-        class="back-button"
-        onclick="showScreen('explore')"
-      >
-        ←
-      </button>
+            <div class="eyebrow" style="color:white;">
+                Ask a Local
+            </div>
 
-      <div class="topbar-title">
-        FairFare
-      </div>
+            <h2>
+                Have a question?
+            </h2>
+
+            <p>
+                Ask the things Google doesn't always tell you.
+                Get practical local advice.
+            </p>
+
+        </div>
+
+
+        <div class="ask-box">
+
+            <input
+                id="question"
+                placeholder="Where should I eat near Assi Ghat?"
+            >
+
+            <button onclick="askLocal()">
+                Ask →
+            </button>
+
+        </div>
 
     </div>
 
+</section>
 
-    <div class="fare-hero">
 
-      <span class="badge" style="background:rgba(255,116,23,.18);color:var(--orange);">
-        LOCAL PRICE INTELLIGENCE
-      </span>
+<!-- FOOTER -->
+<footer>
 
-      <h1>
-        Is your fare fair?
-      </h1>
+    <div class="footer-inner">
 
-      <p>
-        Enter your route and quoted price. LocalLens compares it with
-        community-reported local ranges.
-      </p>
+        <div class="footer-logo">
+            LOCAL<span>LENS</span>
+        </div>
+
+        <div class="footer-text">
+            See the city like a local. © 2026 LocalLens
+        </div>
 
     </div>
 
-
-    <div class="container">
-
-      <div class="form-group">
-
-        <label class="input-label">
-          From
-        </label>
-
-        <input
-          id="fareFrom"
-          class="input"
-          value="Varanasi Cantt"
-        />
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label class="input-label">
-          To
-        </label>
-
-        <input
-          id="fareTo"
-          class="input"
-          value="Dashashwamedh Ghat"
-        />
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label class="input-label">
-          Vehicle
-        </label>
-
-        <select
-          id="fareVehicle"
-          class="input"
-        >
-          <option>Auto</option>
-          <option>E-rickshaw</option>
-          <option>Cab</option>
-          <option>Bike</option>
-        </select>
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label class="input-label">
-          Driver quoted price
-        </label>
-
-        <input
-          id="farePrice"
-          class="input"
-          type="number"
-          value="300"
-        />
-
-      </div>
-
-
-      <button
-        class="btn btn-primary btn-full"
-        onclick="checkFare()"
-      >
-        Check FairFare
-      </button>
-
-
-      <div
-        id="fareResult"
-        class="fare-result"
-      >
-
-        <div class="fare-result-title">
-          Higher than the community range
-        </div>
-
-        <div class="fare-price">
-          ₹120–₹180
-        </div>
-
-        <div class="fare-advice">
-          Suggested action: negotiate or compare alternatives.
-          Community reports suggest a lower price for this route.
-        </div>
-
-        <div class="range-bar">
-          <div class="range-fill"></div>
-        </div>
-
-        <div
-          style="display:flex;justify-content:space-between;"
-          class="small muted"
-        >
-          <span>Expected</span>
-          <span>₹120–₹180</span>
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =======================================================
-       HIDDEN GEMS
-       ======================================================= -->
-
-  <section id="gems" class="screen hidden">
-
-    <div class="topbar">
-
-      <button
-        class="back-button"
-        onclick="showScreen('explore')"
-      >
-        ←
-      </button>
-
-      <div class="topbar-title">
-        Hidden Gems
-      </div>
-
-    </div>
-
-
-    <div class="section">
-
-      <div class="section-label">
-        Beyond tourist lists
-      </div>
-
-      <div class="section-title">
-        Places locals know.
-      </div>
-
-      <p
-        class="muted"
-        style="font-size:12px;line-height:1.6;margin-top:7px;margin-bottom:18px;"
-      >
-        Community-recommended places that give you a more local experience.
-      </p>
-
-
-      <div class="list">
-
-        <div class="card place-card">
-
-          <div class="visual-placeholder">
-            <span>ASSI AREA · SAMPLE VISUAL</span>
-          </div>
-
-          <div class="place-body">
-
-            <div class="place-title-row">
-              <div class="place-title">
-                Assi-side local lanes
-              </div>
-
-              <div class="rating">
-                ★ 9.1
-              </div>
-            </div>
-
-            <div class="place-description">
-              Quieter lanes, small cafés and local evening life away
-              from the busiest tourist stretch.
-            </div>
-
-            <div style="margin-top:12px;">
-              <span class="badge badge-green">
-                Local favourite
-              </span>
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="card place-card">
-
-          <div class="visual-placeholder">
-            <span>LOCAL MARKET · SAMPLE VISUAL</span>
-          </div>
-
-          <div class="place-body">
-
-            <div class="place-title-row">
-              <div class="place-title">
-                Vishwanath Gali side lanes
-              </div>
-
-              <div class="rating">
-                ★ 8.8
-              </div>
-            </div>
-
-            <div class="place-description">
-              Explore smaller shops and everyday local commerce
-              beyond the obvious tourist stops.
-            </div>
-
-            <div style="margin-top:12px;">
-              <span class="badge badge-orange">
-                Worth exploring
-              </span>
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =======================================================
-       FOOD
-       ======================================================= -->
-
-  <section id="food" class="screen hidden">
-
-    <div class="topbar">
-
-      <button
-        class="back-button"
-        onclick="showScreen('explore')"
-      >
-        ←
-      </button>
-
-      <div class="topbar-title">
-        Local Food
-      </div>
-
-    </div>
-
-
-    <div class="section">
-
-      <div class="section-label">
-        Eat like a local
-      </div>
-
-      <div class="section-title">
-        What should you try?
-      </div>
-
-
-      <div class="list" style="margin-top:18px;">
-
-        <div class="card">
-
-          <div class="list-item">
-
-            <div class="icon-box icon-orange">
-              🍛
-            </div>
-
-            <div class="list-item-content">
-
-              <div class="list-item-title">
-                Kachori Sabzi
-              </div>
-
-              <div class="list-item-text">
-                Classic Varanasi breakfast. Usually best early in the morning.
-              </div>
-
-            </div>
-
-            <span class="badge badge-orange">
-              ₹30–80
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <div class="card">
-
-          <div class="list-item">
-
-            <div class="icon-box icon-orange">
-              ☕
-            </div>
-
-            <div class="list-item-content">
-
-              <div class="list-item-title">
-                Kulhad Chai
-              </div>
-
-              <div class="list-item-text">
-                Simple local chai experience — especially around busy lanes.
-              </div>
-
-            </div>
-
-            <span class="badge badge-orange">
-              ₹15–40
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <div class="card">
-
-          <div class="list-item">
-
-            <div class="icon-box icon-orange">
-              🍨
-            </div>
-
-            <div class="list-item-content">
-
-              <div class="list-item-title">
-                Malaiyo
-              </div>
-
-              <div class="list-item-text">
-                Seasonal Varanasi speciality traditionally enjoyed in winter.
-              </div>
-
-            </div>
-
-            <span class="badge badge-orange">
-              ₹40–100
-            </span>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =======================================================
-       TRANSPORT
-       ======================================================= -->
-
-  <section id="transport" class="screen hidden">
-
-    <div class="topbar">
-
-      <button
-        class="back-button"
-        onclick="showScreen('explore')"
-      >
-        ←
-      </button>
-
-      <div class="topbar-title">
-        Local Transport
-      </div>
-
-    </div>
-
-
-    <div class="section">
-
-      <div class="section-label">
-        Getting around
-      </div>
-
-      <div class="section-title">
-        Choose your ride.
-      </div>
-
-
-      <div class="list" style="margin-top:18px;">
-
-        <div class="card">
-
-          <div class="list-item">
-
-            <div class="icon-box icon-orange">
-              🛺
-            </div>
-
-            <div class="list-item-content">
-
-              <div class="list-item-title">
-                Auto-rickshaw
-              </div>
-
-              <div class="list-item-text">
-                Flexible for short city trips. Negotiate before starting.
-              </div>
-
-            </div>
-
-            <span class="badge badge-green">
-              ₹50–180
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <div class="card">
-
-          <div class="list-item">
-
-            <div class="icon-box icon-orange">
-              🛺
-            </div>
-
-            <div class="list-item-content">
-
-              <div class="list-item-title">
-                E-rickshaw
-              </div>
-
-              <div class="list-item-text">
-                Useful for short distances and crowded areas.
-              </div>
-
-            </div>
-
-            <span class="badge badge-green">
-              ₹20–80
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <div class="card">
-
-          <div class="list-item">
-
-            <div class="icon-box icon-orange">
-              🚕
-            </div>
-
-            <div class="list-item-content">
-
-              <div class="list-item-title">
-                Cab
-              </div>
-
-              <div class="list-item-text">
-                Better for longer routes or when travelling with luggage.
-              </div>
-
-            </div>
-
-            <span class="badge badge-green">
-              ₹150+
-            </span>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =======================================================
-       BUDGET
-       ======================================================= -->
-
-  <section id="budget" class="screen hidden">
-
-    <div class="topbar">
-
-      <button
-        class="back-button"
-        onclick="showScreen('explore')"
-      >
-        ←
-      </button>
-
-      <div class="topbar-title">
-        Budget Planner
-      </div>
-
-    </div>
-
-
-    <div class="section">
-
-      <div class="section-label">
-        Travel budget
-      </div>
-
-      <div class="section-title">
-        Plan before you go.
-      </div>
-
-
-      <div class="budget-total" style="margin-top:18px;">
-
-        <div class="budget-total-label">
-          Estimated daily spend
-        </div>
-
-        <div
-          class="budget-total-value"
-          id="budgetTotal"
-        >
-          ₹2,450
-        </div>
-
-      </div>
-
-
-      <div class="card">
-
-        <div class="budget-row">
-          <span>Stay</span>
-          <span>₹1,000</span>
-        </div>
-
-        <div class="budget-row">
-          <span>Food</span>
-          <span>₹600</span>
-        </div>
-
-        <div class="budget-row">
-          <span>Transport</span>
-          <span>₹350</span>
-        </div>
-
-        <div class="budget-row">
-          <span>Activities</span>
-          <span>₹300</span>
-        </div>
-
-        <div class="budget-row">
-          <span>Buffer</span>
-          <span>₹200</span>
-        </div>
-
-      </div>
-
-
-      <div style="margin-top:14px;">
-
-        <button
-          class="btn btn-primary btn-full"
-          onclick="showToast('Budget saved for your Varanasi trip.')"
-        >
-          Save my budget
-        </button>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =======================================================
-       ASK LOCAL
-       ======================================================= -->
-
-  <section id="ask" class="screen hidden">
-
-    <div class="topbar">
-
-      <button
-        class="back-button"
-        onclick="showScreen('explore')"
-      >
-        ←
-      </button>
-
-      <div class="topbar-title">
-        Ask a Local
-      </div>
-
-    </div>
-
-
-    <div class="ask-hero">
-
-      <span
-        class="badge"
-        style="background:rgba(255,255,255,.18);color:white;"
-      >
-        COMMUNITY
-      </span>
-
-      <h1>
-        Ask someone who knows the city.
-      </h1>
-
-      <p>
-        Practical questions. Local answers. Less guesswork.
-      </p>
-
-    </div>
-
-
-    <div class="container">
-
-      <textarea
-        id="question"
-        class="question-box"
-        placeholder="Example: I have 2 days in Varanasi. Where should I eat?"
-      ></textarea>
-
-      <button
-        class="btn btn-dark btn-full"
-        style="margin-top:10px;"
-        onclick="answerLocal()"
-      >
-        Ask a Local →
-      </button>
-
-
-      <div id="localAnswer" class="answer hidden">
-
-        <span class="badge" style="background:rgba(255,116,23,.16);color:var(--orange);">
-          SAMPLE LOCAL RESPONSE
-        </span>
-
-        <p id="answerText"></p>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =======================================================
-       SAVED
-       ======================================================= -->
-
-  <section id="saved" class="screen hidden">
-
-    <div class="topbar">
-
-      <div class="topbar-title">
-        Saved
-      </div>
-
-    </div>
-
-
-    <div class="section">
-
-      <div class="section-label">
-        Your places
-      </div>
-
-      <div class="section-title">
-        Saved for later.
-      </div>
-
-
-      <div class="card" style="margin-top:18px;">
-
-        <div class="list-item">
-
-          <div class="icon-box icon-orange">
-            ◆
-          </div>
-
-          <div class="list-item-content">
-
-            <div class="list-item-title">
-              Assi-side local lanes
-            </div>
-
-            <div class="list-item-text">
-              Varanasi · Hidden Gem
-            </div>
-
-          </div>
-
-          <span style="color:var(--orange);">
-            ♥
-          </span>
-
-        </div>
-
-      </div>
-
-
-      <div class="card" style="margin-top:12px;">
-
-        <div class="list-item">
-
-          <div class="icon-box icon-orange">
-            🍛
-          </div>
-
-          <div class="list-item-content">
-
-            <div class="list-item-title">
-              Kachori Sabzi
-            </div>
-
-            <div class="list-item-text">
-              Varanasi · Local Food
-            </div>
-
-          </div>
-
-          <span style="color:var(--orange);">
-            ♥
-          </span>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =======================================================
-       PROFILE
-       ======================================================= -->
-
-  <section id="profile" class="screen hidden">
-
-    <div class="profile-header">
-
-      <div class="profile-avatar">
-        VR
-      </div>
-
-      <div class="profile-name">
-        Vishwash
-      </div>
-
-      <div class="profile-tagline">
-        Exploring cities like a local.
-      </div>
-
-
-      <div class="stat-grid">
-
-        <div class="stat">
-          <div class="stat-number">
-            12
-          </div>
-          <div class="stat-label">
-            SAVED
-          </div>
-        </div>
-
-        <div class="stat">
-          <div class="stat-number">
-            8
-          </div>
-          <div class="stat-label">
-            REPORTS
-          </div>
-        </div>
-
-        <div class="stat">
-          <div class="stat-number">
-            24
-          </div>
-          <div class="stat-label">
-            HELPFUL
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <div class="section">
-
-      <div class="section-label">
-        LocalLens
-      </div>
-
-      <div class="section-title">
-        Your travel profile
-      </div>
-
-
-      <div class="list" style="margin-top:18px;">
-
-        <div class="card clickable" onclick="showToast('Profile settings are part of the demo.')">
-
-          <div class="list-item">
-
-            <div class="icon-box icon-gray">
-              ⚙
-            </div>
-
-            <div class="list-item-content">
-
-              <div class="list-item-title">
-                Settings
-              </div>
-
-              <div class="list-item-text">
-                Preferences and account settings
-              </div>
-
-            </div>
-
-            <div class="list-arrow">
-              →
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="card clickable" onclick="showToast('Community contribution feature coming soon.')">
-
-          <div class="list-item">
-
-            <div class="icon-box icon-orange">
-              +
-            </div>
-
-            <div class="list-item-content">
-
-              <div class="list-item-title">
-                Contribute local knowledge
-              </div>
-
-              <div class="list-item-text">
-                Help other travellers make better decisions.
-              </div>
-
-            </div>
-
-            <div class="list-arrow">
-              →
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =======================================================
-       BOTTOM NAVIGATION
-       ======================================================= -->
-
-  <div class="bottom-nav-wrap">
-
-    <nav class="bottom-nav">
-
-      <button
-        id="nav-home"
-        class="nav-btn active"
-        onclick="showScreen('home')"
-      >
-        <span class="nav-icon">⌂</span>
-        Home
-      </button>
-
-
-      <button
-        id="nav-explore"
-        class="nav-btn"
-        onclick="showScreen('explore')"
-      >
-        <span class="nav-icon">⌖</span>
-        Explore
-      </button>
-
-
-      <button
-        id="nav-map"
-        class="nav-btn"
-        onclick="showToast('Map module coming next.')"
-      >
-        <span class="nav-icon">◉</span>
-        Map
-      </button>
-
-
-      <button
-        id="nav-saved"
-        class="nav-btn"
-        onclick="showScreen('saved')"
-      >
-        <span class="nav-icon">♡</span>
-        Saved
-      </button>
-
-
-      <button
-        id="nav-profile"
-        class="nav-btn"
-        onclick="showScreen('profile')"
-      >
-        <span class="nav-icon">○</span>
-        Profile
-      </button>
-
-    </nav>
-
-  </div>
-
-
-  <!-- TOAST -->
-
-  <div id="toast" class="toast"></div>
-
-</div>
+</footer>
 
 
 <script>
 
-  /* =========================================================
-     SCREEN NAVIGATION
-     ========================================================= */
+/* SEARCH */
 
-  const screens = [
-    "home",
-    "explore",
-    "fairfare",
-    "gems",
-    "food",
-    "transport",
-    "budget",
-    "ask",
-    "saved",
-    "profile"
-  ];
+function searchLocal(){
 
-  function showScreen(screen) {
+    const value = document.querySelector(".search-box input").value;
 
-    screens.forEach(id => {
-      const element = document.getElementById(id);
-
-      if (element) {
-        element.classList.toggle(
-          "hidden",
-          id !== screen
-        );
-      }
-    });
-
-    updateNavigation(screen);
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-  }
-
-
-  function updateNavigation(screen) {
-
-    document
-      .querySelectorAll(".nav-btn")
-      .forEach(btn => {
-        btn.classList.remove("active");
-      });
-
-    const navMap = {
-      home: "nav-home",
-      explore: "nav-explore",
-      saved: "nav-saved",
-      profile: "nav-profile"
-    };
-
-    if (navMap[screen]) {
-      document
-        .getElementById(navMap[screen])
-        .classList.add("active");
+    if(value.trim() === ""){
+        alert("Try searching for a place, food or local experience.");
+        return;
     }
-  }
+
+    alert(
+        "LocalLens search demo\n\nSearching for: " + value
+    );
+
+}
 
 
-  /* =========================================================
-     DESTINATION SEARCH
-     ========================================================= */
+/* FAIRFARE */
 
-  function searchDestination() {
+function checkFare(){
 
-    const input =
-      document.getElementById("destinationSearch");
-
-    const results =
-      document.getElementById("searchResults");
-
-    if (input.value.trim().length > 0) {
-      results.classList.remove("hidden");
-    } else {
-      results.classList.add("hidden");
-    }
-  }
-
-
-  /* =========================================================
-     FAIRFARE
-     ========================================================= */
-
-  function checkFare() {
-
-    const price =
-      Number(document.getElementById("farePrice").value);
+    const price = Number(
+        document.getElementById("price").value
+    );
 
     const result =
-      document.getElementById("fareResult");
+        document.getElementById("fareResult");
 
-    const title =
-      result.querySelector(".fare-result-title");
+    if(!price){
 
-    const fare =
-      result.querySelector(".fare-price");
+        result.style.display = "block";
 
-    const advice =
-      result.querySelector(".fare-advice");
+        result.innerHTML =
+            "Please enter the driver's quoted price.";
 
-    const fill =
-      result.querySelector(".range-fill");
-
-    if (!price || price <= 0) {
-
-      showToast("Please enter a valid quoted price.");
-
-      return;
+        return;
     }
 
 
-    if (price <= 180) {
+    let message = "";
 
-      result.classList.add("good");
+    if(price <= 180){
 
-      title.textContent =
-        "Within the community-reported range";
+        message =
+            "✓ Looks fair! ₹120–₹180 is the expected community range.";
 
-      fare.textContent =
-        "₹120–₹180";
+    }else if(price <= 250){
 
-      advice.textContent =
-        "Looks reasonable for this demo route. You can still compare alternatives before accepting.";
+        message =
+            "⚠ Slightly higher than the expected range. Consider negotiating.";
 
-      fill.style.width = "45%";
+    }else{
 
-    } else if (price <= 230) {
+        message =
+            "✕ Higher than the community-reported range. Expected: ₹120–₹180. Try negotiating or compare alternatives.";
 
-      result.classList.remove("good");
-
-      title.textContent =
-        "Slightly above the community range";
-
-      fare.textContent =
-        "₹120–₹180";
-
-      advice.textContent =
-        "You may want to negotiate. Ask if the driver can come closer to the local range.";
-
-      fill.style.width = "72%";
-
-    } else {
-
-      result.classList.remove("good");
-
-      title.textContent =
-        "Higher than the community range";
-
-      fare.textContent =
-        "₹120–₹180";
-
-      advice.textContent =
-        "Suggested action: negotiate or compare alternatives. Community reports suggest a lower price.";
-
-      fill.style.width = "90%";
     }
 
-  }
+    result.style.display = "block";
+    result.innerHTML = message;
+
+}
 
 
-  /* =========================================================
-     ASK A LOCAL
-     ========================================================= */
+/* ASK A LOCAL */
 
-  function answerLocal() {
+function askLocal(){
 
     const question =
-      document.getElementById("question").value.trim();
+        document.getElementById("question").value;
 
-    const answerBox =
-      document.getElementById("localAnswer");
+    if(question.trim() === ""){
 
-    const answerText =
-      document.getElementById("answerText");
+        alert("Write your question first.");
 
-    if (!question) {
-
-      showToast("Ask your local question first.");
-
-      return;
+        return;
     }
 
+    alert(
+        "Ask a Local — Demo\n\n" +
+        "Your question:\n" +
+        question +
+        "\n\nA local recommendation would appear here."
+    );
 
-    answerBox.classList.remove("hidden");
-
-    answerText.textContent =
-      "For a first Varanasi trip, keep your plan flexible. Spend time around Assi Ghat and the old city, try local breakfast early in the morning, and avoid packing too many attractions into one day. For transport, compare the quoted fare with FairFare before accepting.";
-
-  }
-
-
-  /* =========================================================
-     TOAST
-     ========================================================= */
-
-  let toastTimer;
-
-  function showToast(message) {
-
-    const toast =
-      document.getElementById("toast");
-
-    toast.textContent = message;
-
-    toast.classList.add("show");
-
-    clearTimeout(toastTimer);
-
-    toastTimer = setTimeout(() => {
-
-      toast.classList.remove("show");
-
-    }, 2500);
-
-  }
-
-
-  /* =========================================================
-     INITIAL STATE
-     ========================================================= */
-
-  showScreen("home");
+}
 
 </script>
 
